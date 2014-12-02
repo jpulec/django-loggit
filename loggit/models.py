@@ -7,8 +7,6 @@ from django.template.loader import get_template_from_string
 from django.utils import timezone
 import swapper
 
-from loggit.context import actor_context_manager
-
 
 class BaseLogEntry(models.Model):
     """
@@ -32,33 +30,16 @@ class BaseLogEntry(models.Model):
         abstract = True
 
 
-class ActorLogEntryManager(models.Manager):
-    """
-    Custom model manager for AppLogEntry so we can check if None was explictly
-    passed as a kwarg for creation.
-    """
-    def create(self, **kwargs):
-        if not 'actor' in kwargs:
-            kwargs['actor'] = actor_context_manager.actor
-        return super(ActorLogEntryManager, self).create(**kwargs)
-
-
-class ActorLogEntry(BaseLogEntry):
+class ActorMixin(models.Model):
     actor = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
         related_name="(classname)%s")
-
-    objects = ActorLogEntryManager()
 
     class Meta:
         abstract = True
 
-    def __unicode__(self):
-        return "{0} performed event: {1}".format(unicode(self.actor),
-            unicode(self.event))
 
-
-class LogEntry(ActorLogEntry):
-    class Meta(ActorLogEntry.Meta):
+class LogEntry(BaseLogEntry, ActorMixin):
+    class Meta(BaseLogEntry.Meta):
         swappable = swapper.swappable_setting('loggit', 'LogEntry')
 
 
@@ -97,7 +78,6 @@ class TemplateLogEvent(BaseLogEvent):
 
     def render(self, entry, **kwargs):
         kwargs['entry'] = entry
-        print kwargs['entry']
         context = self.get_context(**kwargs)
         return get_template_from_string(self.template).render(context)
 
@@ -105,3 +85,40 @@ class TemplateLogEvent(BaseLogEvent):
 class LogEvent(TemplateLogEvent):
     class Meta(TemplateLogEvent.Meta):
         swappable = swapper.swappable_setting('loggit', 'LogEvent')
+
+
+# Optional models using django-genericm2m that allow attaching of objects to
+# a log event
+try:
+    from collections import defaultdict
+    from genericm2m.models import RelatedObjectsDescriptor
+    from django.contrib.contenttypes.fields import GenericForeignKey
+    from django.contrib.contenttypes.models import ContentType
+
+    class RelatedObject(models.Model):
+        log_entry = models.ForeignKey(swapper.get_model_name('loggit', 'LogEntry'),
+            related_name='log_entries')
+
+        # ACTUAL RELATED OBJECT:
+        content_type = models.ForeignKey(ContentType, related_name="related_%(class)s")
+        object_id = models.IntegerField(db_index=True)
+        object = GenericForeignKey(fk_field="object_id")
+
+        label = models.CharField(max_length=255)
+
+    class M2MLogEntryMixin(models.Model):
+        related = RelatedObjectsDescriptor(RelatedObject, 'log_entry', 'object')
+
+        class Meta:
+            abstract = True
+
+    class M2MLogEventMixin(object):
+        def get_context(self, **kwargs):
+            entry = kwargs.pop('entry')
+            models_context = defaultdict(list)
+            for relation in entry.related.order_by('label'):
+                models_context[relation.label].append(relation.object)
+            return super(M2MLogEventMixin, self).get_context(**models_context)
+
+except ImportError:
+    pass
