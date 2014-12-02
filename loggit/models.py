@@ -7,7 +7,7 @@ from django.template.loader import get_template_from_string
 from django.utils import timezone
 import swapper
 
-from chewse.logsauce.context import actor_context_manager
+from loggit.context import actor_context_manager
 
 
 class BaseLogEntry(models.Model):
@@ -15,7 +15,7 @@ class BaseLogEntry(models.Model):
     A base class that implements the interface necessary to log an event.
     The render method returns a representation of this event.
     """
-    event = models.ForeignKey(swapper.get_model_name('logsauce', 'LogEvent'),
+    event = models.ForeignKey(swapper.get_model_name('loggit', 'LogEvent'),
         related_name='(classname)%s')
     created_ts = models.DateTimeField(default=timezone.now)
 
@@ -27,7 +27,6 @@ class BaseLogEntry(models.Model):
         This default rendering just returns the event's rendering.
         """
         return self.event.render(self, **kwargs)
-    render.allow_tags = True
 
     class Meta:
         abstract = True
@@ -60,7 +59,7 @@ class ActorLogEntry(BaseLogEntry):
 
 class LogEntry(ActorLogEntry):
     class Meta(ActorLogEntry.Meta):
-        swappable = swapper.swappable_setting('logsauce', 'LogEntry')
+        swappable = swapper.swappable_setting('loggit', 'LogEntry')
 
 
 class BaseLogEvent(models.Model):
@@ -105,4 +104,4 @@ class TemplateLogEvent(BaseLogEvent):
 
 class LogEvent(TemplateLogEvent):
     class Meta(TemplateLogEvent.Meta):
-        swappable = swapper.swappable_setting('logsauce', 'LogEvent')
+        swappable = swapper.swappable_setting('loggit', 'LogEvent')

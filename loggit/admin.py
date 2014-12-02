@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 
-from chewse.logsauce.models import LogEntry, LogEvent
+from loggit.models import LogEntry, LogEvent
 
 
 class LogEntryAdmin(admin.ModelAdmin):

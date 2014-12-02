@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from chewse.logsauce.context import actor_context_manager
+from loggit.context import actor_context_manager
 
 
 class ActorMiddleware(object):
