@@ -12,7 +12,9 @@ Detailed info is in the 'docs' directory.
 Quick Start
 -----------
 
-1. Add "loggit" to your INSTALLED_APPS setting like this::
+1. Add "loggit" to your INSTALLED_APPS setting like this:
+    .. code:: python
+    
     INSTALLED_APPS = (
         ...
         'loggit',
