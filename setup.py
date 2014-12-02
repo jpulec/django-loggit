@@ -12,7 +12,10 @@ setup(
     version='0.1',
     packages=find_packages(),
     include_package_data=True,
-    install_requires=['swapper==0.2.1',],
+    install_requires=['swapper==0.2.1', 'django>=1.5'],
+    extras_require={
+        'M2M': ["django-generic-m2m==0.2.2",],
+    },
     license='BSD License',  # example license
     description='Keep records of domain actions',
     long_description=README,

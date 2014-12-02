@@ -22,6 +22,12 @@ Quick Start
     LOGGIT_LOGENTRY_MODEL = '<app_label>.<ModelName>'
     LOGGIT_LOGEVENT_MODEL = '<app_label>.<ModelName>'
 
+1a. Optionally install `django-generic-m2m`. Provided in django-loggit are two
+   mixins that will add support for adding a generic M2M relationship to a
+   log entry, where objects can be added with a particular label and then will
+   be coalesced into the context that can be used by the event's render method.
+   See .. _django-generic-m2m: https://github.com/coleifer/django-generic-m2m .
+
 2. IMPORTANT: Loggit uses swappable models for its models. This is done so that
    either the LogEntry or the LogEvent model can be replaced with something that
    implements the same interface. However...For projects on Django 1.7+, this
