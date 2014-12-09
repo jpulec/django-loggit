@@ -1,6 +1,6 @@
-=====
+======
 Loggit
-=====
+======
 
 Loggit is a django app to record that a certain event transpired. Perhaps a
 customer made a purchase. Maybe an email was sent, or an order was shipped.

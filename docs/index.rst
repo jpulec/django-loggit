@@ -11,6 +11,18 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   usage
+   example
+
+Code
+----
+
+Code and issue tracker: https://github.com/jpulec/django-loggit
+
+Pull requests are welcome.
+
+
+.. include:: ../CHANGES.rst
 
 
 Indices and tables
