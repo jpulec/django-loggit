@@ -55,7 +55,7 @@ Included with django-loggit are two base abstract classes, ``BaseLogEvent`` and
     models, you MUST not swap them for the lifetime of your migrations.
     Therefore, it is very beneficial to be able to alter a model that exists in
     your own app. As a caveat to migrations, your model MUST belong to the first
-    migration of the app it belogns to. Read more about swappable models here:
+    migration of the app it belongs to. Read more about swappable models here:
     `Django Migration Dependencies`_ and `Django Customizing User Auth`_.
 
 .. _django migration dependencies: https://docs.djangoproject.com/en/dev/topics/migrations/#dependencies
